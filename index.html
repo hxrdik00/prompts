@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Login Experience</title>
+  <style>
+    :root {
+      --bg-1: #070b1a;
+      --bg-2: #0f1f45;
+      --neon-cyan: #39f5ff;
+      --neon-purple: #bc7aff;
+      --text-main: #edf3ff;
+      --text-muted: #9cb2d8;
+      --error: #ff7b9b;
+      --success: #52ffb8;
+      --glass: rgba(255, 255, 255, 0.08);
+      --glass-border: rgba(255, 255, 255, 0.2);
+      --input-bg: rgba(9, 19, 46, 0.7);
+      --card-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+      --focus-ring: 0 0 0 3px rgba(57, 245, 255, 0.35);
+      --transition-fast: 180ms ease;
+      --transition-slow: 420ms cubic-bezier(.2, .8, .2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      color: var(--text-main);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(57, 245, 255, 0.18), transparent 32%),
+        radial-gradient(circle at 75% 5%, rgba(188, 122, 255, 0.2), transparent 30%),
+        linear-gradient(140deg, var(--bg-1), var(--bg-2));
+      font-family: "Inter", "Segoe UI", Roboto, system-ui, sans-serif;
+      overflow: hidden;
+      perspective: 1200px;
+    }
+
+    .aurora,
+    .aurora::before,
+    .aurora::after {
+      position: absolute;
+      inset: -20%;
+      pointer-events: none;
+      content: "";
+      z-index: 0;
+      background-repeat: no-repeat;
+      filter: blur(50px) saturate(120%);
+      animation: drift 18s linear infinite;
+    }
+
+    .aurora {
+      background-image:
+        radial-gradient(circle, rgba(57, 245, 255, 0.25), transparent 55%),
+        radial-gradient(circle, rgba(188, 122, 255, 0.2), transparent 50%);
+      background-position: 15% 15%, 85% 25%;
+    }
+
+    .aurora::before {
+      background-image: radial-gradient(circle, rgba(39, 138, 255, 0.22), transparent 52%);
+      background-position: 60% 80%;
+      animation-duration: 22s;
+      animation-direction: reverse;
+    }
+
+    .aurora::after {
+      background-image: radial-gradient(circle, rgba(112, 255, 171, 0.16), transparent 48%);
+      background-position: 30% 70%;
+      animation-duration: 26s;
+    }
+
+    @keyframes drift {
+      0% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+      50% { transform: translate3d(4%, -6%, 0) rotate(8deg) scale(1.04); }
+      100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); }
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background-image: radial-gradient(circle at center, rgba(255,255,255,0.9) 0 1px, transparent 1px);
+      background-size: 120px 120px;
+      opacity: 0.25;
+      animation: twinkle 8s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.18; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(1.02); }
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: min(92vw, 440px);
+      padding: 2.25rem;
+      border-radius: 24px;
+      border: 1px solid var(--glass-border);
+      background: linear-gradient(140deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      backdrop-filter: blur(16px);
+      box-shadow: var(--card-shadow);
+      transform-style: preserve-3d;
+      animation: card-in 900ms cubic-bezier(.19,1,.22,1);
+    }
+
+    @keyframes card-in {
+      from {
+        opacity: 0;
+        transform: translateY(30px) rotateX(12deg) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) rotateX(0) scale(1);
+      }
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .45rem .75rem;
+      border-radius: 999px;
+      background: rgba(57, 245, 255, 0.14);
+      color: var(--neon-cyan);
+      border: 1px solid rgba(57, 245, 255, 0.32);
+      font-size: .8rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+      animation: pulse 2.6s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(57,245,255,.3); }
+      50% { box-shadow: 0 0 0 8px rgba(57,245,255,0); }
+    }
+
+    h1 {
+      margin: 1rem 0 .45rem;
+      font-size: clamp(1.8rem, 3.8vw, 2.4rem);
+    }
+
+    p {
+      margin: 0 0 1.4rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .field {
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .field input {
+      width: 100%;
+      border: 1px solid transparent;
+      border-radius: 14px;
+      background: var(--input-bg);
+      color: var(--text-main);
+      padding: .95rem 1rem .95rem 2.75rem;
+      outline: none;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .field input:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: var(--focus-ring);
+      transform: translateY(-1px);
+    }
+
+    .field svg {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      top: 50%;
+      left: .95rem;
+      transform: translateY(-50%);
+      fill: #93a7d3;
+      transition: fill var(--transition-fast);
+    }
+
+    .field input:focus + svg {
+      fill: var(--neon-cyan);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: .25rem 0 1.25rem;
+      font-size: .88rem;
+      color: var(--text-muted);
+    }
+
+    .row a {
+      color: var(--neon-cyan);
+      text-decoration: none;
+    }
+
+    .row a:hover {
+      text-decoration: underline;
+    }
+
+    .btn {
+      width: 100%;
+      border: none;
+      border-radius: 14px;
+      padding: .95rem 1rem;
+      color: #051027;
+      font-weight: 700;
+      letter-spacing: .02em;
+      cursor: pointer;
+      background: linear-gradient(130deg, var(--neon-cyan), var(--neon-purple));
+      position: relative;
+      overflow: hidden;
+      transition: transform var(--transition-fast), filter var(--transition-fast);
+    }
+
+    .btn:hover { transform: translateY(-2px) scale(1.01); filter: brightness(1.06); }
+    .btn:active { transform: translateY(0); }
+
+    .btn::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 25%, rgba(255,255,255,.35) 47%, transparent 70%);
+      transform: translateX(-150%);
+      animation: sheen 3s ease-in-out infinite;
+    }
+
+    @keyframes sheen {
+      0% { transform: translateX(-150%); }
+      45%, 100% { transform: translateX(150%); }
+    }
+
+    .status {
+      min-height: 1.2rem;
+      margin-top: .85rem;
+      font-size: .88rem;
+    }
+
+    .status.error { color: var(--error); }
+    .status.success { color: var(--success); }
+
+    .socials {
+      margin-top: 1.35rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .65rem;
+    }
+
+    .socials button {
+      border-radius: 12px;
+      padding: .65rem;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.06);
+      color: #d4e3ff;
+      cursor: pointer;
+      transition: transform var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+    }
+
+    .socials button:hover {
+      transform: translateY(-2px);
+      border-color: rgba(57,245,255,.5);
+      background: rgba(57,245,255,.13);
+    }
+
+    @media (max-width: 520px) {
+      .card { padding: 1.65rem; border-radius: 20px; }
+      .socials { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="aurora"></div>
+  <div class="stars"></div>
+
+  <main class="card" id="card">
+    <span class="badge">✨ Welcome Back</span>
+    <h1>Login to Continue</h1>
+    <p>Sign in to access your dashboard, personalized reports, and real-time activity.</p>
+
+    <form id="login-form" novalidate>
+      <label class="field">
+        <input id="email" type="email" placeholder="Email address" autocomplete="email" required />
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5L4 8V6l8 5 8-5Z"/></svg>
+      </label>
+
+      <label class="field">
+        <input id="password" type="password" placeholder="Password" autocomplete="current-password" required minlength="8" />
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8h-1V6a5 5 0 0 0-10 0v2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V10a2 2 0 0 0-2-2Zm-9-2a3 3 0 0 1 6 0v2H9V6Zm9 14H6V10h12v10Z"/></svg>
+      </label>
+
+      <div class="row">
+        <label><input type="checkbox" /> Remember me</label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button class="btn" type="submit">Launch Session</button>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </form>
+
+    <div class="socials">
+      <button type="button">Google</button>
+      <button type="button">GitHub</button>
+      <button type="button">Apple</button>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('login-form');
+    const email = document.getElementById('email');
+    const password = document.getElementById('password');
+    const status = document.getElementById('status');
+    const card = document.getElementById('card');
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      status.className = 'status';
+
+      if (!email.value.includes('@')) {
+        status.textContent = 'Please enter a valid email address.';
+        status.classList.add('error');
+        email.focus();
+        return;
+      }
+
+      if (password.value.length < 8) {
+        status.textContent = 'Password must be at least 8 characters.';
+        status.classList.add('error');
+        password.focus();
+        return;
+      }
+
+      status.textContent = 'Authenticated! Redirecting to your dashboard...';
+      status.classList.add('success');
+    });
+
+    document.addEventListener('pointermove', (event) => {
+      const { innerWidth, innerHeight } = window;
+      const x = (event.clientX / innerWidth - 0.5) * 14;
+      const y = (event.clientY / innerHeight - 0.5) * -14;
+      card.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+
+    document.addEventListener('pointerleave', () => {
+      card.style.transform = 'rotateY(0deg) rotateX(0deg)';
+    });
+  </script>
+</body>
+</html>
